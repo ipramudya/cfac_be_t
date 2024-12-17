@@ -1,13 +1,36 @@
 import { logger } from '@/lib'
+import { db } from '@/lib/db/client'
+import { sql } from 'drizzle-orm'
 import { Router } from 'express'
+import status from 'http-status-codes'
 
 export function healthCheck() {
   const router = Router()
 
-  router.get('/health', (_, res) => {
-    logger.info('API is running')
+  router.get('/health', async (_, res) => {
+    const healthCheckResult: Record<string, any> = {
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+    }
 
-    res.status(200).json({ message: 'API is running' })
+    try {
+      const result = await db.execute(sql`SELECT 1 AS ok`)
+      healthCheckResult['database'] = {
+        status: 'ok',
+        queryResult: result.rows[0]?.ok,
+      }
+
+      res.status(status.OK).json(healthCheckResult)
+    } catch (error) {
+      logger.error('Database healthcheck failed:', error)
+
+      healthCheckResult['database'] = {
+        status: 'unhealthy',
+        queryResult: (error as Error).message,
+      }
+
+      res.status(status.INTERNAL_SERVER_ERROR).json(healthCheckResult)
+    }
   })
 
   return router
