@@ -1,10 +1,8 @@
 import { HASH_SALT } from '@/constant'
-import { logger } from '@/lib'
-import { db } from '@/lib/db/client'
+import { db, logger } from '@/lib'
 import { userTable } from '@/lib/db/schema'
 import { HttpError, parseAndValidate } from '@/utils'
 import * as validation from '@/validation'
-
 import bcrypt from 'bcryptjs'
 import { omit } from 'es-toolkit'
 import type { NextFunction, Request, Response } from 'express'

@@ -1,5 +1,5 @@
-import type { Server } from 'node:http'
 import { logger } from './winston-logger'
+import type { Server } from 'node:http'
 
 const signals = ['SIGINT', 'SIGTERM']
 

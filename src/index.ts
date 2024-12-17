@@ -1,10 +1,8 @@
 import 'dotenv/config'
-
 import { MODE, PORT } from '@/constant'
 import { gracefulShutdown, logger } from '@/lib'
 import { cors, limiter } from '@/middleware'
 import * as routes from '@/router'
-
 import compression from 'compression'
 import express from 'express'
 import helmet from 'helmet'

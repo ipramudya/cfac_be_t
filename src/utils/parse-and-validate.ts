@@ -1,7 +1,7 @@
+import { HttpError } from './http-error'
 import type { NextFunction, Request } from 'express'
 import status from 'http-status-codes'
-import { AnyZodObject, z, ZodEffects, ZodError, ZodIssue } from 'zod'
-import { HttpError } from './http-error'
+import { AnyZodObject, ZodEffects, ZodError, ZodIssue, z } from 'zod'
 
 export async function parseAndValidate<T extends AnyZodObject | ZodEffects<AnyZodObject>>(
   schema: T,

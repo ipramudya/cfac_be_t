@@ -5,5 +5,9 @@
   "printWidth": 100,
   "semi": false,
   "bracketSameLine": true,
-  "useTabs": false
+  "useTabs": false,
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
+  "importOrderSortSpecifiers": true,
+  "importOrder": ["dotenv/config", "^@/(.*)$", "^[./]", "<THIRD_PARTY_MODULES>"],
+  "importOrderParserPlugins": ["typescript"]
 }
