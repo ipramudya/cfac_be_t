@@ -4,7 +4,7 @@ import { sql } from 'drizzle-orm'
 import { Router } from 'express'
 import status from 'http-status-codes'
 
-export function healthCheck() {
+export function healthcheckRoute() {
   const router = Router()
 
   router.get('/health', async (_, res) => {

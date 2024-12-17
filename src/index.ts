@@ -27,8 +27,10 @@ void (async function () {
 
   // Router initialization
   app.use('/api', routes.v1())
-  routes.errorEndpoint(app)
+
+  // Catch all endpoints
   routes.notFoundEndpoint(app)
+  routes.errorEndpoint(app)
 
   const httpServer = http.createServer(app)
 
