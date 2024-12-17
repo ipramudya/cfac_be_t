@@ -13,7 +13,7 @@ export async function parseAndValidate<T extends AnyZodObject | ZodEffects<AnyZo
   } catch (error) {
     if (error instanceof ZodError) {
       const errors = transformZodErrors(error.errors)
-      return next(new HttpError(status.BAD_REQUEST, 'Validation error', { details: errors }))
+      return next(new HttpError(status.BAD_REQUEST, 'Validation error', errors))
     }
     return next(new HttpError(status.BAD_REQUEST, 'Something went wrong!'))
   }
