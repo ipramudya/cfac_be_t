@@ -1,9 +1,9 @@
 import type { Server } from 'node:http'
 import { logger } from './winston-logger'
 
-export function gracefulShutdown(server: Server) {
-  const signals = ['SIGINT', 'SIGTERM']
+const signals = ['SIGINT', 'SIGTERM']
 
+export function gracefulShutdown(server: Server) {
   signals.forEach((signal) => {
     process.on(signal, () => {
       try {
