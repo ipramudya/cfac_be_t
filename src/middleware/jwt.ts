@@ -1,17 +1,9 @@
 import { JWT_SECRET } from '@/constant'
-import { logger } from '@/lib'
+import { type JwtPayloadData, logger } from '@/lib'
 import { HttpError } from '@/utils'
 import { NextFunction, Request, Response } from 'express'
 import status from 'http-status-codes'
 import { type JwtPayload, verify } from 'jsonwebtoken'
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: JwtPayload
-    }
-  }
-}
 
 interface JWTMiddlewareOptions {
   excludedPaths: string[]
@@ -39,7 +31,7 @@ export function jwt(options: JWTMiddlewareOptions) {
         return next(new HttpError(status.FORBIDDEN, 'Invalid token'))
       }
 
-      req.user = decoded as JwtPayload
+      req.auth = decoded as JwtPayload & JwtPayloadData
       next()
     })
   }

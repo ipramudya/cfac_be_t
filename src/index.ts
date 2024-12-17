@@ -22,7 +22,7 @@ void (async function () {
   app.use(helmet())
   app.use(cors())
   app.use(limiter())
-  app.use(jwt({ excludedPaths: ['/register', '/health'] }))
+  app.use(jwt({ excludedPaths: ['/health', '/register', '/login'] }))
 
   // Router initialization
   app.use('/api', routes.v1())

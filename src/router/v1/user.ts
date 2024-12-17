@@ -1,10 +1,12 @@
-import * as controller from '@/controller'
+import { changePassword, login, register } from '@/controller'
 import { Router } from 'express'
 
 export function userRoute() {
   const router = Router()
 
-  router.route('/user').post(controller.register)
+  router.post('/register', register)
+  router.post('/login', login)
+  router.post('/change-password', changePassword)
 
   return router
 }
