@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { MODE, PORT } from '@/constant'
 import { gracefulShutdown, logger } from '@/lib'
-import { cors, limiter } from '@/middleware'
+import { cors, jwt, limiter } from '@/middleware'
 import * as routes from '@/router'
 import compression from 'compression'
 import express from 'express'
@@ -20,8 +20,9 @@ void (async function () {
   app.use(express.json())
   app.use(compression())
   app.use(helmet())
-  app.use(limiter)
-  app.use(cors)
+  app.use(cors())
+  app.use(limiter())
+  app.use(jwt({ excludedPaths: ['/register', '/health'] }))
 
   // Router initialization
   app.use('/api', routes.v1())
