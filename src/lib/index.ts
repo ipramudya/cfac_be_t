@@ -1,6 +1,6 @@
 export * from './db/db'
 export * from './graceful-shutdown'
 export * from './jwt'
-export * from './mongodb'
+export * from './nosql/mongodb'
 export * from './websocket'
 export * from './winston-logger'
