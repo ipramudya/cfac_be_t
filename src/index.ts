@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { MODE, PORT } from '@/constant'
-import { createWsServer, gracefulShutdown, logger } from '@/lib'
+import { connectMongoDB, createWsServer, gracefulShutdown, logger } from '@/lib'
 import { cors, expressJWT, expressRateLimit, socketRateLimit, websocketJWT } from '@/middleware'
 import * as routes from '@/router'
 import compression from 'compression'
@@ -12,6 +12,8 @@ void (async function () {
   const app = express()
   const httpServer = http.createServer(app)
   const ws = createWsServer(httpServer)
+
+  await connectMongoDB()
 
   if (MODE === 'production') {
     app.set('trust proxy', 1) // sets req.hostname, req.ip, etc.
