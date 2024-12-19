@@ -1,7 +1,7 @@
 import { HASH_SALT } from '@/constant'
 import { db, generateToken, logger } from '@/lib'
 import { userTable } from '@/lib/db/schema'
-import { HttpError, parseAndValidate } from '@/utils'
+import { HTTPException, parseAndValidate } from '@/utils'
 import * as validation from '@/validation'
 import bcrypt from 'bcryptjs'
 import { sql } from 'drizzle-orm'
@@ -38,7 +38,7 @@ export async function register(req: Request, res: Response, next: NextFunction) 
       logger.debug({ error })
 
       if (error instanceof DatabaseError && error.constraint === 'users_username_unique') {
-        return next(new HttpError(status.BAD_REQUEST, 'Username already exists'))
+        return next(new HTTPException(status.BAD_REQUEST, 'Username already exists'))
       }
 
       return next(new Error('Failed to register user'))
@@ -59,13 +59,13 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         .where(sql`username = ${body.username}`)
 
       if (!user) {
-        return next(new HttpError(status.UNAUTHORIZED, 'Invalid username or password'))
+        return next(new HTTPException(status.UNAUTHORIZED, 'Invalid username or password'))
       }
 
       const isPassValid = await bcrypt.compare(body.password, user.password)
 
       if (!isPassValid) {
-        return next(new HttpError(status.UNAUTHORIZED, 'Invalid username or password'))
+        return next(new HTTPException(status.UNAUTHORIZED, 'Invalid username or password'))
       }
 
       const token = generateToken({
@@ -97,7 +97,7 @@ export async function changePassword(req: Request, res: Response, next: NextFunc
       const isPassValid = await bcrypt.compare(body.oldPassword, user.password)
 
       if (!isPassValid) {
-        return next(new HttpError(status.UNAUTHORIZED, 'Invalid username or password'))
+        return next(new HTTPException(status.UNAUTHORIZED, 'Invalid username or password'))
       }
 
       const salt = await bcrypt.genSalt(HASH_SALT)

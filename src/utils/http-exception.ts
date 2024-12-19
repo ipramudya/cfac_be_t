@@ -1,6 +1,6 @@
 type Data = Record<string, any> | Record<string, any>[]
 
-export class HttpError extends Error {
+export class HTTPException extends Error {
   status: number
   data?: Data
 

@@ -1,4 +1,4 @@
-import { HttpError } from './http-error'
+import { HTTPException } from './http-exception'
 import type { NextFunction, Request } from 'express'
 import status from 'http-status-codes'
 import { AnyZodObject, ZodEffects, ZodError, ZodIssue, z } from 'zod'
@@ -13,9 +13,9 @@ export async function parseAndValidate<T extends AnyZodObject | ZodEffects<AnyZo
   } catch (error) {
     if (error instanceof ZodError) {
       const errors = transformZodErrors(error.errors)
-      return next(new HttpError(status.BAD_REQUEST, 'Validation error', errors))
+      return next(new HTTPException(status.BAD_REQUEST, 'Validation error', errors))
     }
-    return next(new HttpError(status.BAD_REQUEST, 'Something went wrong!'))
+    return next(new HTTPException(status.BAD_REQUEST, 'Something went wrong!'))
   }
 }
 
