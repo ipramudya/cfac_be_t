@@ -6,3 +6,4 @@ export const HASH_SALT = 8
 export const JWT_SECRET = process.env.JWT_SECRET!
 export const MONGODB_URI = process.env.MONGODB_URI!
 export const GEMINI_API_KEY = process.env.GEMINI_API_KEY!
+export const REDIS_URL = process.env.REDIS_URL!
