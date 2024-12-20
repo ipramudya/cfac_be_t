@@ -1,5 +1,4 @@
-import { logger } from '@/lib'
-import { db } from '@/lib/db/db'
+import { db, logger } from '@/lib'
 import { sql } from 'drizzle-orm'
 import { Router } from 'express'
 import status from 'http-status-codes'

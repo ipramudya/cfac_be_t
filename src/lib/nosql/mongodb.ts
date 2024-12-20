@@ -1,4 +1,4 @@
-import { logger } from './winston-logger'
+import { logger } from '../logger'
 import mongoose from 'mongoose'
 
 const clientOptions = {

@@ -1,9 +1,9 @@
+import { HTTPException } from '@/api/utils'
 import { logger } from '@/lib'
-import { HTTPException } from '@/utils'
 import type { Application, NextFunction, Request, Response } from 'express'
 import status from 'http-status-codes'
 
-export function errorEndpoint(app: Application) {
+export function errorHandling(app: Application) {
   app.use((err: Error, _: Request, res: Response, __: NextFunction) => {
     const { message, stack } = err
 

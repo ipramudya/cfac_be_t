@@ -1,4 +1,4 @@
-import { changePassword, login, register } from '@/controller'
+import { changePassword, login, register } from '@/api/controller'
 import { Router } from 'express'
 
 export function userRoute() {

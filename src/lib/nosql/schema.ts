@@ -1,34 +1,60 @@
-import mongoose, { Document, Schema } from 'mongoose'
+import type { ChatHistory, ChatMessage, MessageMetadata } from './types'
+import mongoose from 'mongoose'
 
-type ChatMessage = {
-  role: 'user' | 'assistant'
-  text: string
-}
+const MessageMetadataSchema = new mongoose.Schema<MessageMetadata>(
+  {
+    type: {
+      type: String,
+      enum: ['recipe', 'nutrition', 'ingredient', 'suggestion'],
+    },
+    data: mongoose.Schema.Types.Mixed,
+  },
+  { _id: false },
+)
 
-type ChatHistory = Document & {
-  userId: string
-  messages: ChatMessage[]
-}
+const ChatMessageSchema = new mongoose.Schema<ChatMessage>(
+  {
+    content: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: String,
+      required: true,
+      enum: ['user', 'assistant'],
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now,
+    },
+    contextId: {
+      type: String,
+      required: true,
+    },
+    metadata: MessageMetadataSchema,
+  },
+  { _id: false },
+)
 
-const chatSchema = new Schema<ChatHistory>({
+const ChatSchema = new mongoose.Schema<ChatHistory>({
   userId: {
     type: String,
     required: true,
     unique: true,
+    index: true,
   },
-  messages: [
-    {
-      role: {
-        type: String,
-        enum: ['user', 'assistant'],
-        required: true,
-      },
-      text: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
+  messages: [ChatMessageSchema],
+  lastInteraction: {
+    type: Date,
+    default: Date.now,
+  },
 })
 
-export const ChatModel = mongoose.model<ChatHistory>('Chat', chatSchema)
+ChatSchema.index({ userId: 1, timestamp: -1 })
+
+ChatSchema.pre('save', function (next) {
+  this.lastInteraction = new Date()
+  next()
+})
+
+export const ChatModel = mongoose.model<ChatHistory>('Chat', ChatSchema)

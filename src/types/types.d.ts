@@ -1,5 +1,3 @@
-import type { JwtPayloadData } from '@/lib/jwt'
-import type { JwtPayload } from 'jsonwebtoken'
 import type { Socket } from 'socket.io'
 
 declare global {
@@ -16,5 +14,10 @@ declare global {
       }
       auth?: JwtPayload & JwtPayloadData
     }
+  }
+
+  export type JwtPayloadData = {
+    userId: string
+    username: string
   }
 }
