@@ -1,4 +1,4 @@
-import type { Socket } from 'socket.io'
+import type { JwtPayload } from 'jsonwebtoken'
 
 declare global {
   namespace Express {
@@ -7,16 +7,7 @@ declare global {
     }
   }
 
-  type AuthenticatedSocket = Socket & {
-    request: {
-      headers: {
-        authorization?: string
-      }
-      auth?: JwtPayload & JwtPayloadData
-    }
-  }
-
-  export type JwtPayloadData = {
+  type JwtPayloadData = {
     userId: string
     username: string
   }

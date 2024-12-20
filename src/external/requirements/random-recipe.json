@@ -1,0 +1,18 @@
+{
+  "method": "GET",
+  "endpoint": "https://api.spoonacular.com/recipes/random",
+  "parameters": [
+    {
+      "name": "includeNutrition",
+      "type": "boolean",
+      "example": true,
+      "description": "Whether to include nutritional information to returned recipes."
+    },
+    {
+      "name": "number",
+      "type": "number",
+      "example": 1,
+      "description": "The number of random recipes to be returned (between 1 and 100)."
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "method": "GET",
+  "endpoint": "https://api.spoonacular.com/recipes/complexSearch",
+  "parameters": [
+    {
+      "name": "query",
+      "type": "string",
+      "example": "pasta",
+      "description": "The (natural language) recipe search query. Required"
+    },
+    {
+      "name": "cuisine",
+      "type": "string",
+      "example": "italian",
+      "description": "The cuisine(s) of the recipes. One or more, comma separated (will be interpreted as 'OR'). Full list of supported cuisines [African,Asian,American,British,Cajun,Caribbean,Chinese,Eastern,European,European,French,German,Greek,Indian,Irish,Italian,Japanese,Jewish,Korean,Latin,American,Mediterranean,Mexican,Middle,Eastern,Nordic,Southern,Spanish,Thai,Vietnamese] ."
+    },
+    {
+      "name": "diet",
+      "type": "string",
+      "example": "vegetarian",
+      "description": "The diet(s) for which the recipes must be suitable. You can specify multiple with comma meaning AND connection. You can specify multiple diets separated with a pipe | meaning OR connection. Full supported diet [Gluten Free,Ketogenic,Vegetarian,Lacto-Vegetarian,Ovo-Vegetarian,Vegan,Pescetarian,Paleo,Primal,Low FODMAP,Whole30]"
+    },
+    {
+      "name": "type",
+      "type": "string",
+      "example": "main course",
+      "description": "The type of recipe. See a full list of supported meal types [main course,side dish,dessert,appetizer,salad,bread,breakfast,soup,beverage,sauce,marinade,fingerfood,snack,drink]."
+    },
+    {
+      "name": "instructionsRequired",
+      "type": "boolean",
+      "example": true,
+      "description": "Whether the recipes must have instructions. [Do not check this parameter by LLMs, this should be true by default]."
+    },
+    {
+      "name": "fillIngredients",
+      "type": "boolean",
+      "example": false,
+      "description": "Add information about the ingredients and whether they are used or missing in relation to the query. [Do not check this parameter by LLMs, this should be true by default]."
+    },
+    {
+      "name": "addRecipeInformation",
+      "type": "boolean",
+      "example": false,
+      "description": "If set to true, you get more information about the recipes returned. [Do not check this parameter by LLMs, this should be true by default]."
+    },
+    {
+      "name": "addRecipeInstructions",
+      "type": "boolean",
+      "example": false,
+      "description": "If set to true, you get analyzed instructions for each recipe returned. [Do not check this parameter by LLMs, this should be true by default]."
+    },
+    {
+      "name": "addRecipeNutrition",
+      "type": "boolean",
+      "example": false,
+      "description": "If set to true, you get nutritional information about each recipes returned. [Do not check this parameter by LLMs, this should be true by default]."
+    },
+    {
+      "name": "maxReadyTime",
+      "type": "number",
+      "example": 20,
+      "description": "The maximum time in minutes it should take to prepare and cook the recipe."
+    },
+    {
+      "name": "minServings",
+      "type": "number",
+      "example": 1,
+      "description": "The minimum amount of servings the recipe is for."
+    },
+    {
+      "name": "maxServings",
+      "type": "number",
+      "example": 8,
+      "description": "The maximum amount of servings the recipe is for."
+    },
+    {
+      "name": "sort",
+      "type": "string",
+      "example": "calories",
+      "description": "The strategy to sort recipes by. See a full list of supported sorting options [(empty),meta-score,popularity,healthiness,price,time,random,max-used-ingredients,min-missing-ingredients,alcohol,caffeine,copper,energy,calories,calcium,carbohydrates,carbs,choline,cholesterol,total-fat,fluoride,trans-fat,saturated-fat,mono-unsaturated-fat,poly-unsaturated-fat,fiber,folate,folic-acid,iodine,iron,magnesium,manganese,vitamin-b3,niacin,vitamin-b5,pantothenic-acid,phosphorus,potassium,protein,vitamin-b2,riboflavin,selenium,sodium,vitamin-b1,thiamin,vitamin-a,vitamin-b6,vitamin-b12,vitamin-c,vitamin-d,vitamin-e,vitamin-k,sugar,zinc]."
+    },
+    {
+      "name": "sortDirection",
+      "type": "string",
+      "example": "asc",
+      "description": "The direction in which to sort. Must be either 'asc' (ascending) or 'desc' (descending)."
+    },
+    {
+      "name": "minCarbs",
+      "type": "number",
+      "example": 10,
+      "description": "The minimum amount of carbohydrates in grams the recipe must have per serving."
+    },
+    {
+      "name": "maxCarbs",
+      "type": "number",
+      "example": 100,
+      "description": "The maximum amount of carbohydrates in grams the recipe can have per serving."
+    },
+    {
+      "name": "minProtein",
+      "type": "number",
+      "example": 5,
+      "description": "The minimum amount of protein in grams the recipe must have per serving."
+    },
+    {
+      "name": "maxProtein",
+      "type": "number",
+      "example": 50,
+      "description": "The maximum amount of protein in grams the recipe can have per serving."
+    },
+    {
+      "name": "minCalories",
+      "type": "number",
+      "example": 200,
+      "description": "The minimum amount of calories the recipe must have per serving."
+    },
+    {
+      "name": "maxCalories",
+      "type": "number",
+      "example": 800,
+      "description": "The maximum amount of calories the recipe can have per serving."
+    },
+    {
+      "name": "minFat",
+      "type": "number",
+      "example": 10,
+      "description": "The minimum amount of fat in grams the recipe must have per serving."
+    },
+    {
+      "name": "maxFat",
+      "type": "number",
+      "example": 30,
+      "description": "The maximum amount of fat in grams the recipe can have per serving."
+    },
+    {
+      "name": "minSugar",
+      "type": "number",
+      "example": 0,
+      "description": "The minimum amount of sugar in grams the recipe must have per serving."
+    },
+    {
+      "name": "maxSugar",
+      "type": "number",
+      "example": 15,
+      "description": "The maximum amount of sugar in grams the recipe can have per serving."
+    },
+    {
+      "name": "number",
+      "type": "number",
+      "example": 10,
+      "description": "The maximum number of recipes to return (default: 10, maximum: 100)."
+    }
+  ]
+}

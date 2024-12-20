@@ -1,0 +1,90 @@
+{
+  "method": "GET",
+  "endpoint": "https://api.spoonacular.com/food/ingredients/search",
+  "parameters": [
+    {
+      "name": "query",
+      "type": "string",
+      "example": "apple",
+      "description": "The partial or full ingredient name. Required"
+    },
+    {
+      "name": "addChildren",
+      "type": "boolean",
+      "example": true,
+      "description": "Whether to add children of found foods."
+    },
+    {
+      "name": "minProteinPercent",
+      "type": "number",
+      "example": 10,
+      "description": "The minimum percentage of protein the food must have (between 0 and 100)."
+    },
+    {
+      "name": "maxProteinPercent",
+      "type": "number",
+      "example": 90,
+      "description": "The maximum percentage of protein the food can have (between 0 and 100)."
+    },
+    {
+      "name": "minFatPercent",
+      "type": "number",
+      "example": 10,
+      "description": "The minimum percentage of fat the food must have (between 0 and 100)."
+    },
+    {
+      "name": "maxFatPercent",
+      "type": "number",
+      "example": 90,
+      "description": "The maximum percentage of fat the food can have (between 0 and 100)."
+    },
+    {
+      "name": "minCarbsPercent",
+      "type": "number",
+      "example": 10,
+      "description": "The minimum percentage of carbs the food must have (between 0 and 100)."
+    },
+    {
+      "name": "maxCarbsPercent",
+      "type": "number",
+      "example": 90,
+      "description": "The maximum percentage of carbs the food can have (between 0 and 100)."
+    },
+    {
+      "name": "metaInformation",
+      "type": "boolean",
+      "example": false,
+      "description": "Whether to return more meta information about the ingredients."
+    },
+    {
+      "name": "sort",
+      "type": "string",
+      "example": "calories",
+      "description": "The strategy to sort ingredients by. You can sort by any nutrient listed here [(empty),meta-score,popularity,healthiness,price,time,random,max-used-ingredients,min-missing-ingredients,alcohol,caffeine,copper,energy,calories,calcium,carbohydrates,carbs,choline,cholesterol,total-fat,fluoride,trans-fat,saturated-fat,mono-unsaturated-fat,poly-unsaturated-fat,fiber,folate,folic-acid,iodine,iron,magnesium,manganese,vitamin-b3,niacin,vitamin-b5,pantothenic-acid,phosphorus,potassium,protein,vitamin-b2,riboflavin,selenium,sodium,vitamin-b1,thiamin,vitamin-a,vitamin-b6,vitamin-b12,vitamin-c,vitamin-d,vitamin-e,vitamin-k,sugar,zinc]. "
+    },
+    {
+      "name": "sortDirection",
+      "type": "string",
+      "example": "asc",
+      "description": "The direction in which to sort. Must be either 'asc' (ascending) or 'desc' (descending)."
+    },
+    {
+      "name": "language",
+      "type": "text",
+      "example": "en",
+      "description": "Language code, either \"en\" or \"de\"."
+    },
+    {
+      "name": "offset",
+      "type": "number",
+      "example": 0,
+      "description": "The number of results to skip (between 0 and 990)."
+    },
+    {
+      "name": "number",
+      "type": "number",
+      "example": 10,
+      "description": "The number of expected results (between 1 and 100)."
+    }
+  ]
+}

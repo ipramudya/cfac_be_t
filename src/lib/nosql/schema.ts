@@ -14,7 +14,7 @@ const MessageMetadataSchema = new mongoose.Schema<MessageMetadata>(
 
 const ChatMessageSchema = new mongoose.Schema<ChatMessage>(
   {
-    content: {
+    text: {
       type: String,
       required: true,
     },

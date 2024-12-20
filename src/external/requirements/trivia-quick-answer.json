@@ -1,0 +1,16 @@
+{
+  "method": "GET",
+  "endpoint": "https://api.spoonacular.com/recipes/quickAnswer",
+  "parameters": [
+    {
+      "name": "q",
+      "type": "string",
+      "example": "How much vitamin c is in 2 apples?",
+      "description": "The nutrition related question. Required"
+    }
+  ],
+  "response": {
+    "answer": "There are 16.74 mg of Vitamin C in 2 apples. This covers about 20% of your daily needs of Vitamin C.",
+    "image": "https://img.spoonacular.com/ingredients_100x100/apple.jpg"
+  }
+}

@@ -1,11 +1,11 @@
 import { JWT_SECRET } from '@/constant'
 import { logger } from '@/lib'
 import { type JwtPayload, verify } from 'jsonwebtoken'
-import type { ExtendedError } from 'socket.io'
+import io from 'socket.io'
 
 export function jwt() {
-  return function (socket: AuthenticatedSocket, next: (err?: ExtendedError) => void) {
-    const authHeader = socket.request.headers.authorization
+  return function (socket: io.Socket, next: (err?: io.ExtendedError) => void) {
+    const authHeader = socket.handshake.headers.authorization
     const token = authHeader?.split(' ')[1]
 
     if (!token) {
@@ -19,7 +19,7 @@ export function jwt() {
           socket.disconnect(true)
         }
 
-        socket.request.auth = decoded as JwtPayload & JwtPayloadData
+        socket.handshake.auth = decoded as JwtPayload & JwtPayloadData
         next()
       })
     }

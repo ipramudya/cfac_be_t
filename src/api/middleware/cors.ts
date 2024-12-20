@@ -4,7 +4,7 @@ import corsSetup from 'cors'
 export function cors() {
   return corsSetup({
     origin: APP_URL,
-    methods: 'GET,PUT,POST,DELETE',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   })
 }

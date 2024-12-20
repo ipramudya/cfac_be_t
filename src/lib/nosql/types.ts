@@ -1,6 +1,6 @@
 import type { Document } from 'mongoose'
 
-export type MessageType = 'recipe' | 'nutrition' | 'ingredient' | 'suggestion'
+export type MessageType = 'recipe' | 'random-recipe' | 'nutrition' | 'ingredient'
 
 export type MessageMetadata = {
   type?: MessageType
@@ -8,7 +8,7 @@ export type MessageMetadata = {
 }
 
 export type ChatMessage = {
-  content: string
+  text: string
   role: 'user' | 'assistant'
   timestamp: Date
   contextId: string
