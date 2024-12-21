@@ -12,9 +12,9 @@ import io from 'socket.io'
 import { v4 as uuid } from 'uuid'
 
 export function onMessage(socket: io.Socket) {
-  return async function (message: string) {
-    const userId = (socket.handshake.auth as JwtPayload & JwtPayloadData).userId
+  const userId = (socket.handshake.auth as JwtPayload & JwtPayloadData).userId
 
+  return async function (message: string) {
     try {
       logger.info('Processing new message', { info: { userId, message } })
 

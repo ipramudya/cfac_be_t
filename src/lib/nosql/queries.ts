@@ -48,3 +48,18 @@ export async function clearOldMessages(userId: string, beforeDate: Date): Promis
     },
   )
 }
+
+export async function addMessages(userId: string, messages: ChatMessage[]): Promise<void> {
+  await ChatModel.updateOne(
+    { userId },
+    {
+      $push: {
+        messages: {
+          $each: messages,
+        },
+      },
+      $set: { lastInteraction: new Date() },
+    },
+    { upsert: true },
+  )
+}

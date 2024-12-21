@@ -1,6 +1,7 @@
 import { logger } from '@/lib'
 import { getChatHistory } from '@/lib/nosql/queries'
-import { clearChatCache, setChatCache } from '@/lib/redis/methods'
+import { setChatCache } from '@/lib/redis/methods'
+import { onDisconnect } from './disconnect'
 import { onMessage } from './message'
 import io from 'socket.io'
 
@@ -16,10 +17,7 @@ export async function onConnection(socket: io.Socket) {
   await initializeActiveChat(userId)
 
   socket.on('message', onMessage(socket))
-
-  socket.on('disconnect', async () => {
-    await clearChatCache(userId)
-  })
+  socket.on('disconnect', onDisconnect(socket))
 }
 
 async function initializeActiveChat(userId: string): Promise<void> {
