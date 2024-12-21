@@ -20,6 +20,4 @@ ${JSON.stringify(triviaQuickAnswer, null, 2)}
 USAGE GUIDELINES:
 - Each API endpoint serves a specific purpose
 - Parameters should be validated against their specifications
-- All required parameters must be included
-- Optional parameters should only be included when specifically requested
-- Response formats should match the documented structure`
+- All required parameters must be included`

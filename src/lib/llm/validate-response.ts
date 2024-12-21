@@ -31,18 +31,14 @@ export function validateLLMResponse(response: any): LLMResponse {
       }
 
       // Add required defaults
-      params.instructionsRequired = true
-      params.fillIngredients = true
-      params.addRecipeInformation = true
-      params.addRecipeNutrition = true
-      params.number = params.number || 10
+      params.number = params.number || 5
       break
 
     case 'ingredient':
       if (!params.query) {
         throw new Error('Ingredient search requires query parameter')
       }
-      params.number = params.number || 10
+      params.number = params.number || 5
       params.metaInformation = true
       break
 

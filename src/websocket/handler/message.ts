@@ -1,4 +1,6 @@
+import { processExternalApi } from '@/external/services/service'
 import { logger } from '@/lib'
+import { processApiResponse } from '@/lib/llm/api-response-processor'
 import { processMessage } from '@/lib/llm/message-processor'
 import { LLMResponse } from '@/lib/llm/types'
 import type { ChatMessage } from '@/lib/nosql/types'
@@ -23,7 +25,7 @@ export function onMessage(socket: io.Socket) {
       if (llmResponse.needsMoreInfo && llmResponse.followUpQuestion) {
         await handleFollowUpQuestion(socket, userId, cachedMessagesHistory, llmResponse)
       } else {
-        await handleApiProcessing(socket, llmResponse)
+        await handleApiProcessing(socket, userId, llmResponse)
       }
     } catch (error) {
       logger.error('Error processing message', { error })
@@ -79,13 +81,36 @@ async function handleFollowUpQuestion(
   socket.emit('message', assistantMessage)
 }
 
-async function handleApiProcessing(socket: io.Socket, llmResponse: LLMResponse) {
-  // Emit processing event before making API call
-  socket.emit('processing', {
-    type: llmResponse.type,
-    params: llmResponse.params,
-  })
+async function handleApiProcessing(socket: io.Socket, userId: string, llmResponse: LLMResponse) {
+  try {
+    socket.emit('processing', {
+      type: llmResponse.type,
+      params: llmResponse.params,
+    })
 
-  // TODO: Implement API call handling
-  // This is where you'll add the actual API call logic later
+    const chatHistory = (await getChatCache(userId)) || []
+
+    const apiResponse = await processExternalApi(llmResponse)
+
+    const naturalResponse = await processApiResponse(apiResponse, llmResponse.type)
+
+    const assistantMessage: ChatMessage = {
+      ...naturalResponse,
+      contextId: chatHistory[chatHistory.length - 1].contextId,
+      timestamp: new Date(),
+      role: 'assistant',
+      metadata: {
+        type: llmResponse.type,
+        data: apiResponse.metadata?.data,
+      },
+    }
+
+    const updatedHistory = [...chatHistory, assistantMessage]
+    await setChatCache(userId, updatedHistory)
+
+    socket.emit('message', assistantMessage)
+  } catch (error) {
+    logger.error('API processing failed:', error)
+    socket.emit('error', 'Failed to process request')
+  }
 }

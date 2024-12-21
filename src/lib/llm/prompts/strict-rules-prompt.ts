@@ -10,6 +10,7 @@ IMPORTANT RULES:
 2. For specific recipe requests (e.g., "I want pasta", "Show me chicken recipes"):
    - Use recipe type
    - Set query parameter with the food mentioned
+   - Match user preferences with parameters described in API SPECIFICATIONS AND REQUIREMENTS
    - Only ask about cuisine/diet/type if explicitly requested by user
 
 3. For nutrition questions:
@@ -34,9 +35,9 @@ IMPORTANT RULES:
    Meal Types: main course, side dish, dessert, appetizer, salad, bread, breakfast,
    soup, beverage, sauce, marinade, fingerfood, snack, drink
 
-6. NEVER include parameters marked as "[Do not check this parameter by LLMs]"
+   Process the user's request first (NEVER ask this yet), and then ask for this additional options if needed on the next conversation
 
-7. NEVER ask follow-up questions for random-recipe type
+6. NEVER ask follow-up questions for random-recipe type
 
 Return JSON format:
 {

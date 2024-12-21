@@ -30,49 +30,31 @@
       "name": "instructionsRequired",
       "type": "boolean",
       "example": true,
-      "description": "Whether the recipes must have instructions. [Do not check this parameter by LLMs, this should be true by default]."
+      "description": "Whether the recipes must have instructions."
     },
     {
       "name": "fillIngredients",
       "type": "boolean",
       "example": false,
-      "description": "Add information about the ingredients and whether they are used or missing in relation to the query. [Do not check this parameter by LLMs, this should be true by default]."
+      "description": "Add information about the ingredients and whether they are used or missing in relation to the query."
     },
     {
       "name": "addRecipeInformation",
       "type": "boolean",
       "example": false,
-      "description": "If set to true, you get more information about the recipes returned. [Do not check this parameter by LLMs, this should be true by default]."
+      "description": "If set to true, you get more information about the recipes returned."
     },
     {
       "name": "addRecipeInstructions",
       "type": "boolean",
       "example": false,
-      "description": "If set to true, you get analyzed instructions for each recipe returned. [Do not check this parameter by LLMs, this should be true by default]."
+      "description": "If set to true, you get analyzed instructions for each recipe returned."
     },
     {
       "name": "addRecipeNutrition",
       "type": "boolean",
       "example": false,
-      "description": "If set to true, you get nutritional information about each recipes returned. [Do not check this parameter by LLMs, this should be true by default]."
-    },
-    {
-      "name": "maxReadyTime",
-      "type": "number",
-      "example": 20,
-      "description": "The maximum time in minutes it should take to prepare and cook the recipe."
-    },
-    {
-      "name": "minServings",
-      "type": "number",
-      "example": 1,
-      "description": "The minimum amount of servings the recipe is for."
-    },
-    {
-      "name": "maxServings",
-      "type": "number",
-      "example": 8,
-      "description": "The maximum amount of servings the recipe is for."
+      "description": "If set to true, you get nutritional information about each recipes returned."
     },
     {
       "name": "sort",
@@ -85,66 +67,6 @@
       "type": "string",
       "example": "asc",
       "description": "The direction in which to sort. Must be either 'asc' (ascending) or 'desc' (descending)."
-    },
-    {
-      "name": "minCarbs",
-      "type": "number",
-      "example": 10,
-      "description": "The minimum amount of carbohydrates in grams the recipe must have per serving."
-    },
-    {
-      "name": "maxCarbs",
-      "type": "number",
-      "example": 100,
-      "description": "The maximum amount of carbohydrates in grams the recipe can have per serving."
-    },
-    {
-      "name": "minProtein",
-      "type": "number",
-      "example": 5,
-      "description": "The minimum amount of protein in grams the recipe must have per serving."
-    },
-    {
-      "name": "maxProtein",
-      "type": "number",
-      "example": 50,
-      "description": "The maximum amount of protein in grams the recipe can have per serving."
-    },
-    {
-      "name": "minCalories",
-      "type": "number",
-      "example": 200,
-      "description": "The minimum amount of calories the recipe must have per serving."
-    },
-    {
-      "name": "maxCalories",
-      "type": "number",
-      "example": 800,
-      "description": "The maximum amount of calories the recipe can have per serving."
-    },
-    {
-      "name": "minFat",
-      "type": "number",
-      "example": 10,
-      "description": "The minimum amount of fat in grams the recipe must have per serving."
-    },
-    {
-      "name": "maxFat",
-      "type": "number",
-      "example": 30,
-      "description": "The maximum amount of fat in grams the recipe can have per serving."
-    },
-    {
-      "name": "minSugar",
-      "type": "number",
-      "example": 0,
-      "description": "The minimum amount of sugar in grams the recipe must have per serving."
-    },
-    {
-      "name": "maxSugar",
-      "type": "number",
-      "example": 15,
-      "description": "The maximum amount of sugar in grams the recipe can have per serving."
     },
     {
       "name": "number",

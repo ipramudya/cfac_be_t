@@ -4,7 +4,7 @@ import type {
   RandomRecipeParams,
   SearchIngredientsParams,
   SearchRecipeParams,
-} from '@/external/types'
+} from '@/external/requirements/types'
 
 export interface LLMResponse {
   type: FoodContextType

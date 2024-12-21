@@ -7,3 +7,5 @@ export const JWT_SECRET = process.env.JWT_SECRET!
 export const MONGODB_URI = process.env.MONGODB_URI!
 export const GEMINI_API_KEY = process.env.GEMINI_API_KEY!
 export const REDIS_URL = process.env.REDIS_URL!
+export const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY!
+export const SPOONACULAR_BASE_URL = process.env.SPOONACULAR_BASE_URL!
