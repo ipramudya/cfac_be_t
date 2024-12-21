@@ -2,25 +2,16 @@ import { FoodContextType } from '@/external/requirements/types'
 import { ChatMessage } from '../nosql/types'
 import { aiModel } from './model'
 import { parseLlmIntoJSON } from './parse-into-json'
+import { API_RESPONSE_TEXT_PROMPT } from './prompts/api-response-prompt'
 
 export async function processApiResponse(
   apiResponse: ChatMessage,
   type: FoodContextType,
 ): Promise<ChatMessage> {
-  const prompt = `
-Convert this ${type} API response to natural language and optionally provide a relevant follow-up question:
-${apiResponse.text}
-
-Respond in this format:
-{
-  "text": "Natural language response describing the API results",
-  "followUpQuestion": "Optional follow-up question based on the context (if relevant)"
-}`
-
   const contents = [
     {
       role: 'user',
-      parts: [{ text: prompt }],
+      parts: [{ text: API_RESPONSE_TEXT_PROMPT(type, apiResponse.text) }],
     },
   ]
 

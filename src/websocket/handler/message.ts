@@ -1,116 +1,121 @@
 import { processExternalApi } from '@/external/services/service'
 import { logger } from '@/lib'
-import { processApiResponse } from '@/lib/llm/api-response-processor'
-import { processMessage } from '@/lib/llm/message-processor'
-import { LLMResponse } from '@/lib/llm/types'
+import { LLMResponse, processApiResponse, processMessage } from '@/lib/llm'
 import type { ChatMessage } from '@/lib/nosql/types'
 import { getChatCache, setChatCache } from '@/lib/redis/methods'
-import { SocketException } from '@/websocket/utils'
-import status from 'http-status-codes'
-import { JwtPayload } from 'jsonwebtoken'
 import io from 'socket.io'
 import { v4 as uuid } from 'uuid'
 
 export function onMessage(socket: io.Socket) {
-  const userId = (socket.handshake.auth as JwtPayload & JwtPayloadData).userId
+  const userId = socket.handshake.auth.userId
 
   return async function (message: string) {
     try {
-      logger.info('Processing new message', { info: { userId, message } })
-
-      const cachedMessagesHistory = await cacheIncomingMessage(userId, message)
-
-      const llmResponse = await processMessage(cachedMessagesHistory)
-
-      if (llmResponse.needsMoreInfo && llmResponse.followUpQuestion) {
-        await handleFollowUpQuestion(socket, userId, cachedMessagesHistory, llmResponse)
-      } else {
-        await handleApiProcessing(socket, userId, llmResponse)
-      }
+      await handleUserMessage(socket, userId, message)
     } catch (error) {
-      logger.error('Error processing message', { error })
-      socket.emit('error', error)
+      logger.error('Message handling failed:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        userId,
+      })
+      socket.emit('error', 'Failed to process message')
     }
   }
 }
 
-async function cacheIncomingMessage(userId: string, message: string): Promise<ChatMessage[]> {
-  const newMessage: ChatMessage = {
-    text: message,
-    role: 'user',
-    timestamp: new Date(),
-    contextId: uuid(),
+async function handleUserMessage(socket: io.Socket, userId: string, text: string) {
+  const userMessage = createMessage(text, 'user', uuid())
+  const chatHistory = await saveMessage(userId, userMessage)
+
+  const llmResponse = await processMessage(chatHistory)
+
+  if (llmResponse.needsMoreInfo && llmResponse.followUpQuestion) {
+    return await handleFollowUpQuestion(socket, userId, chatHistory, llmResponse)
   }
 
-  const chatHistory = (await getChatCache(userId)) || []
-  const updatedHistory = [...chatHistory, newMessage]
+  return await handleApiRequest(socket, userId, chatHistory, llmResponse)
+}
 
+function createMessage(
+  text: string,
+  role: 'user' | 'assistant',
+  contextId: string,
+  metadata?: Record<string, any>,
+): ChatMessage {
+  return {
+    text,
+    role,
+    contextId,
+    timestamp: new Date(),
+    metadata,
+  }
+}
+
+async function saveMessage(userId: string, message: ChatMessage): Promise<ChatMessage[]> {
+  const history = (await getChatCache(userId)) || []
+  const updatedHistory = [...history, message]
   await setChatCache(userId, updatedHistory)
-
   return updatedHistory
 }
 
 async function handleFollowUpQuestion(
   socket: io.Socket,
   userId: string,
-  chatHistory: ChatMessage[],
+  history: ChatMessage[],
   llmResponse: LLMResponse,
 ) {
   if (!llmResponse.followUpQuestion) {
-    throw new SocketException(
-      'Missing follow-up question',
-      status.getStatusText(status.BAD_REQUEST),
-      { response: llmResponse },
-    )
+    logger.error('Missing follow-up question in LLM response')
+    socket.emit('error', 'Failed to process request')
+    return
   }
 
-  const assistantMessage: ChatMessage = {
-    text: llmResponse.followUpQuestion,
-    role: 'assistant',
-    timestamp: new Date(),
-    contextId: chatHistory[chatHistory.length - 1].contextId,
-    metadata: {
+  const assistantMessage = createMessage(
+    llmResponse.followUpQuestion,
+    'assistant',
+    history[history.length - 1].contextId,
+    {
       type: llmResponse.type,
       data: llmResponse.params,
     },
-  }
+  )
 
-  const newHistory = [...chatHistory, assistantMessage]
-  await setChatCache(userId, newHistory)
-
+  await saveMessage(userId, assistantMessage)
   socket.emit('message', assistantMessage)
 }
 
-async function handleApiProcessing(socket: io.Socket, userId: string, llmResponse: LLMResponse) {
+async function handleApiRequest(
+  socket: io.Socket,
+  userId: string,
+  history: ChatMessage[],
+  llmResponse: LLMResponse,
+) {
   try {
     socket.emit('processing', {
       type: llmResponse.type,
       params: llmResponse.params,
     })
 
-    const chatHistory = (await getChatCache(userId)) || []
-
     const apiResponse = await processExternalApi(llmResponse)
-
     const naturalResponse = await processApiResponse(apiResponse, llmResponse.type)
 
-    const assistantMessage: ChatMessage = {
-      ...naturalResponse,
-      contextId: chatHistory[chatHistory.length - 1].contextId,
-      timestamp: new Date(),
-      role: 'assistant',
-      metadata: {
+    const assistantMessage = createMessage(
+      naturalResponse.text,
+      'assistant',
+      history[history.length - 1].contextId,
+      {
         type: llmResponse.type,
         data: apiResponse.metadata?.data,
       },
-    }
+    )
 
-    const updatedHistory = [...chatHistory, assistantMessage]
-    await setChatCache(userId, updatedHistory)
-
+    await saveMessage(userId, assistantMessage)
     socket.emit('message', assistantMessage)
   } catch (error) {
-    logger.error('API processing failed:', error)
+    logger.error('API request failed:', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      userId,
+      type: llmResponse.type,
+    })
     socket.emit('error', 'Failed to process request')
   }
 }

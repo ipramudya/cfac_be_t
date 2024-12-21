@@ -10,14 +10,9 @@ import type { Content } from '@google/generative-ai'
 export async function processMessage(messages: ChatMessage[]): Promise<LLMResponse> {
   try {
     const contents = buildContents(messages)
-
     const result = await aiModel.generateContent({ contents })
-
     const parsedResponse = parseLlmIntoJSON(result.response.text())
-
-    const validatedResponse = validateLLMResponse(parsedResponse)
-
-    return validatedResponse
+    return validateLLMResponse(parsedResponse)
   } catch (error) {
     if (error instanceof Error) {
       throw error

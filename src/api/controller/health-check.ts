@@ -4,8 +4,22 @@ import type { Request, Response } from 'express'
 import status from 'http-status-codes'
 import mongoose from 'mongoose'
 
+type ServiceHealth = {
+  status: 'healthy' | 'unhealthy'
+  responseTime?: string
+  error?: string
+  details: Record<string, any>
+}
+
+type HealthCheckResponse = {
+  uptime: number
+  timestamp: string
+  message: string
+  services: Record<string, ServiceHealth>
+}
+
 export async function healthCheck(_: Request, res: Response) {
-  const healthCheckResult: Record<string, any> = {
+  const response: HealthCheckResponse = {
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
     message: 'OK',
@@ -13,35 +27,51 @@ export async function healthCheck(_: Request, res: Response) {
   }
 
   try {
-    const pgResult = await checkPgHealth()
-    healthCheckResult.services['postgresql'] = pgResult
+    const services = await Promise.all([
+      checkServiceHealth('postgresql', checkPgHealth),
+      checkServiceHealth('mongodb', checkMongoHealth),
+      checkServiceHealth('redis', checkRedisHealth),
+    ])
 
-    const mongoResult = await checkMongoHealth()
-    healthCheckResult.services['mongodb'] = mongoResult
+    response.services = {
+      postgresql: services[0],
+      mongodb: services[1],
+      redis: services[2],
+    }
 
-    const redisResult = await checkRedisHealth()
-    healthCheckResult.services['redis'] = redisResult
-
-    const isHealthy = Object.values(healthCheckResult.services).every(
-      (service: any) => service.status === 'healthy',
+    const isHealthy = Object.values(response.services).every(
+      (service) => service.status === 'healthy',
     )
 
-    const statusCode = isHealthy ? status.OK : status.SERVICE_UNAVAILABLE
-    healthCheckResult.message = isHealthy ? 'OK' : 'Service Unavailable'
-
-    res.status(statusCode).json(healthCheckResult)
+    response.message = isHealthy ? 'OK' : 'Service Unavailable'
+    res.status(isHealthy ? status.OK : status.SERVICE_UNAVAILABLE).json(response)
   } catch (error) {
     logger.error('Health check failed:', error)
-
     res.status(status.INTERNAL_SERVER_ERROR).json({
-      ...healthCheckResult,
+      ...response,
       message: 'Error performing health check',
-      error: (error as Error).message,
+      error: error instanceof Error ? error.message : 'Unknown error',
     })
   }
 }
 
-async function checkPgHealth() {
+async function checkServiceHealth(
+  serviceName: string,
+  checker: () => Promise<ServiceHealth>,
+): Promise<ServiceHealth> {
+  try {
+    return await checker()
+  } catch (error) {
+    logger.error(`${serviceName} health check failed:`, error)
+    return {
+      status: 'unhealthy',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      details: { connected: false },
+    }
+  }
+}
+
+async function checkPgHealth(): Promise<ServiceHealth> {
   try {
     const startTime = Date.now()
     const result = await db.execute(sql`SELECT 1 AS ok`)
@@ -67,7 +97,7 @@ async function checkPgHealth() {
   }
 }
 
-async function checkMongoHealth() {
+async function checkMongoHealth(): Promise<ServiceHealth> {
   try {
     const startTime = Date.now()
     const state = mongoose.connection.readyState
@@ -100,7 +130,7 @@ async function checkMongoHealth() {
   }
 }
 
-async function checkRedisHealth() {
+async function checkRedisHealth(): Promise<ServiceHealth> {
   try {
     const startTime = Date.now()
     await cache.ping()

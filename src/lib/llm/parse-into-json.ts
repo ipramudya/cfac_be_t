@@ -4,7 +4,6 @@ export function parseLlmIntoJSON(response: string) {
 
     // Try to match JSON content between code blocks
     const jsonMatch = response.match(/```(?:json)?\s*([\s\S]*?)\s*```/)
-
     // Try to match JSON-like content
     const jsonLikeMatch = response.match(/\{[\s\S]*\}/)
 

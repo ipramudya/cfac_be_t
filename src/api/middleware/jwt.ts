@@ -5,22 +5,13 @@ import type { NextFunction, Request, Response } from 'express'
 import status from 'http-status-codes'
 import { JwtPayload, verify } from 'jsonwebtoken'
 
-interface JWTMiddlewareOptions {
-  excludedPaths: string[]
-}
-
-export function jwt(options: JWTMiddlewareOptions) {
-  const { excludedPaths } = options
-
+export function jwt(options: { excludedPaths: string[] }) {
   return function (req: Request, _: Response, next: NextFunction) {
-    const isPathExcluded = excludedPaths.some((path) => req.path.includes(path))
-    if (isPathExcluded) {
-      return next()
-    }
+    const isExcluded = options.excludedPaths.some((path) => req.path.includes(path))
 
-    const authHeader = req.headers.authorization
-    const token = authHeader?.split(' ')[1]
+    if (isExcluded) return next()
 
+    const token = req.headers.authorization?.split(' ')[1]
     if (!token) {
       return next(new HTTPException(status.UNAUTHORIZED, 'No authorization token provided'))
     }

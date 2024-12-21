@@ -1,6 +1,5 @@
-import { HTTPException, parseAndValidate } from '@/api/utils'
+import { HTTPException, createHashedPassword, parseAndValidate } from '@/api/utils'
 import * as validation from '@/api/validation'
-import { HASH_SALT } from '@/constant'
 import { db, generateToken, logger } from '@/lib'
 import { userTable } from '@/lib/db/schema'
 import bcrypt from 'bcryptjs'
@@ -12,37 +11,26 @@ import { DatabaseError } from 'pg'
 import { v4 as uuid } from 'uuid'
 
 export async function register(req: Request, res: Response, next: NextFunction) {
-  const parsedReq = await parseAndValidate(validation.register, req, next)
+  const validatedReq = await parseAndValidate(validation.register, req, next)
+  if (!validatedReq) return
 
-  if (parsedReq) {
-    const { body } = parsedReq
-
-    try {
-      const salt = await bcrypt.genSalt(HASH_SALT)
-      const hashedPwd = bcrypt.hashSync(body.password, salt)
-
-      const now = new Date()
-
-      const values = {
-        id: uuid(),
-        username: body.username,
-        password: hashedPwd,
-        createdAt: now,
-        updatedAt: now,
-      }
-
-      await db.insert(userTable).values(values)
-
-      res.status(status.CREATED).json(omit(values, ['password']))
-    } catch (error) {
-      logger.debug({ error })
-
-      if (error instanceof DatabaseError && error.constraint === 'users_username_unique') {
-        return next(new HTTPException(status.BAD_REQUEST, 'Username already exists'))
-      }
-
-      return next(new Error('Failed to register user'))
+  try {
+    const hashedPassword = await createHashedPassword(validatedReq.body.password)
+    const userData = {
+      id: uuid(),
+      username: validatedReq.body.username,
+      password: hashedPassword,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }
+
+    await db.insert(userTable).values(userData)
+    res.status(status.CREATED).json(omit(userData, ['password']))
+  } catch (error) {
+    if (error instanceof DatabaseError && error.constraint === 'users_username_unique') {
+      return next(new HTTPException(status.BAD_REQUEST, 'Username already exists'))
+    }
+    return next(new Error('Failed to register user'))
   }
 }
 
@@ -100,8 +88,7 @@ export async function changePassword(req: Request, res: Response, next: NextFunc
         return next(new HTTPException(status.UNAUTHORIZED, 'Invalid username or password'))
       }
 
-      const salt = await bcrypt.genSalt(HASH_SALT)
-      const hashedPwd = bcrypt.hashSync(body.newPassword, salt)
+      const hashedPwd = await createHashedPassword(body.newPassword)
 
       await db
         .update(userTable)
