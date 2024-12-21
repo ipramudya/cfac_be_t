@@ -26,6 +26,7 @@ export function onMessage(socket: io.Socket) {
         await handleApiProcessing(socket, llmResponse)
       }
     } catch (error) {
+      logger.error('Error processing message', { error })
       socket.emit('error', error)
     }
   }

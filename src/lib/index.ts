@@ -1,6 +1,6 @@
 export * from './db/db'
 export * from './jwt'
-export * from './llm/gemini'
+export * from './llm/model'
 export * from './logger'
 export * from './nosql/mongodb'
 export * from './redis/cache'

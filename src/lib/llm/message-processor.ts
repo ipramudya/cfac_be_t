@@ -1,16 +1,16 @@
 import type { ChatMessage } from '../nosql/types'
-import { aiModel } from './gemini'
-import { SYSTEM_PROMPT } from './prompt'
+import { aiModel } from './model'
+import { EXTERNAL_PARAMETERS_PROMPT } from './prompts'
+import { STRICT_RULES_PROMPT } from './prompts/strict-rules-prompt'
 import type { LLMResponse } from './types'
 import { validateLLMResponse } from './validate-response'
+import type { Content } from '@google/generative-ai'
 
 export async function processMessage(messages: ChatMessage[]): Promise<LLMResponse> {
-  const conversation = messages.map((m) => `${m.role}: ${m.text}`).join('\n')
-
-  const prompt = `${SYSTEM_PROMPT}\n\nConversation:\n${conversation}\n\nAnalyze the last message and determine the API requirements.`
-
   try {
-    const result = await aiModel.generateContent(prompt)
+    const contents = buildContents(messages)
+
+    const result = await aiModel.generateContent({ contents })
     const response = result.response.text()
 
     const cleanedResponse = cleanLLMJsonResponse(response)
@@ -21,7 +21,11 @@ export async function processMessage(messages: ChatMessage[]): Promise<LLMRespon
 
     return validatedResponse
   } catch (error) {
-    throw new Error('Failed to parse LLM response')
+    if (error instanceof Error) {
+      throw error
+    } else {
+      throw new Error('Failed to parse LLM response')
+    }
   }
 }
 
@@ -47,4 +51,27 @@ function cleanLLMJsonResponse(response: string): string {
   } catch {
     throw new Error('Unable to clean LLM response')
   }
+}
+
+function buildContents(messages: ChatMessage[]) {
+  const contents = [
+    {
+      role: 'user',
+      parts: [{ text: EXTERNAL_PARAMETERS_PROMPT }, { text: STRICT_RULES_PROMPT }],
+    },
+    ...messages.map((m) => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.text }],
+    })),
+    {
+      role: 'user',
+      parts: [
+        {
+          text: 'Based on the last message, determine the API requirements. Remember to use "recipe" type for dietary preferences and include appropriate parameters.',
+        },
+      ],
+    },
+  ] as Content[]
+
+  return contents
 }

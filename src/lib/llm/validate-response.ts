@@ -1,41 +1,61 @@
-import { API_SPECS } from '@/external/external-specs'
-import { logger } from '../logger'
 import { LLMResponse } from './types'
 
 export function validateLLMResponse(response: any): LLMResponse {
-  // Check if response type is valid
-  if (!Object.keys(API_SPECS).includes(response.type)) {
-    logger.warn('Invalid API type:', response.type)
+  if (
+    !response.type ||
+    !['recipe', 'nutrition', 'ingredient', 'random-recipe'].includes(response.type)
+  ) {
     throw new Error(`Invalid response type: ${response.type}`)
   }
 
-  // Add default values based on type
+  // If we need more info, return early with just the follow-up question
+  if (response.needsMoreInfo) {
+    if (!response.followUpQuestion) {
+      throw new Error('Missing follow-up question when needsMoreInfo is true')
+    }
+    return {
+      type: response.type,
+      params: {},
+      needsMoreInfo: true,
+      followUpQuestion: response.followUpQuestion,
+    }
+  }
+
   const params = { ...response.params }
 
   switch (response.type) {
-    case 'random-recipe':
-      params.number = params.number || 1
-      params.includeNutrition = true
-      break
-
     case 'recipe':
-      // Add required defaults for recipe search
+      // Validate required parameters
+      if (!params.diet && !params.cuisine && !params.query) {
+        throw new Error('Recipe search requires at least one search parameter')
+      }
+
+      // Add required defaults
       params.instructionsRequired = true
       params.fillIngredients = true
       params.addRecipeInformation = true
       params.addRecipeNutrition = true
+      params.number = params.number || 10
       break
 
     case 'ingredient':
+      if (!params.query) {
+        throw new Error('Ingredient search requires query parameter')
+      }
       params.number = params.number || 10
       params.metaInformation = true
+      break
+
+    case 'nutrition':
+      if (!params.q) {
+        throw new Error('Nutrition queries require a q parameter')
+      }
       break
   }
 
   return {
     type: response.type,
     params,
-    needsMoreInfo: response.needsMoreInfo,
-    followUpQuestion: response.needsMoreInfo ? response.followUpQuestion : undefined,
+    needsMoreInfo: false,
   }
 }

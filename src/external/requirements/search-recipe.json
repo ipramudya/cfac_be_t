@@ -12,13 +12,13 @@
       "name": "cuisine",
       "type": "string",
       "example": "italian",
-      "description": "The cuisine(s) of the recipes. One or more, comma separated (will be interpreted as 'OR'). Full list of supported cuisines [African,Asian,American,British,Cajun,Caribbean,Chinese,Eastern,European,European,French,German,Greek,Indian,Irish,Italian,Japanese,Jewish,Korean,Latin,American,Mediterranean,Mexican,Middle,Eastern,Nordic,Southern,Spanish,Thai,Vietnamese] ."
+      "description": "The cuisine(s) of the recipes. One or more, comma separated (will be interpreted as 'OR'). Full list of supported cuisines [African,Asian,American,British,Cajun,Caribbean,Chinese,Eastern,European,European,French,German,Greek,Indian,Irish,Italian,Japanese,Jewish,Korean,Latin,American,Mediterranean,Mexican,Middle,Eastern,Nordic,Southern,Spanish,Thai,Vietnamese]."
     },
     {
       "name": "diet",
       "type": "string",
       "example": "vegetarian",
-      "description": "The diet(s) for which the recipes must be suitable. You can specify multiple with comma meaning AND connection. You can specify multiple diets separated with a pipe | meaning OR connection. Full supported diet [Gluten Free,Ketogenic,Vegetarian,Lacto-Vegetarian,Ovo-Vegetarian,Vegan,Pescetarian,Paleo,Primal,Low FODMAP,Whole30]"
+      "description": "The diet(s) for which the recipes must be suitable. You can specify multiple with comma meaning AND connection. You can specify multiple diets separated with a pipe | meaning OR connection. Full list of supported diet [Gluten Free,Ketogenic,Vegetarian,Lacto-Vegetarian,Ovo-Vegetarian,Vegan,Pescetarian,Paleo,Primal,Low FODMAP,Whole30]"
     },
     {
       "name": "type",
