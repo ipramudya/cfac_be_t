@@ -38,6 +38,8 @@ export function validateLLMResponse(response: any): LLMResponse {
       if (!params.query) {
         throw new Error('Ingredient search requires query parameter')
       }
+
+      // Add required defaults
       params.number = params.number || 5
       params.metaInformation = true
       break

@@ -3,7 +3,7 @@ export const STRICT_RULES_PROMPT = `You must analyze user queries and map them t
 IMPORTANT RULES:
 1. For vague requests like "I want food" or "I'm hungry":
    - Use random-recipe type
-   - Set number=1 and includeNutrition=true
+   - Set number=1
    - DO NOT ask for any preferences or additional parameters
    - Process request immediately
 
@@ -42,7 +42,7 @@ IMPORTANT RULES:
 Return JSON format:
 {
    "type": one of ["recipe", "random-recipe", "nutrition", "ingredient"],
-   "params": only include explicitly mentioned or required parameters,
+   "params": populate parameters from user query to API SPECIFICATIONS and REQUIREMENTS, only include explicitly mentioned or required parameters,
    "needsMoreInfo": false for random-recipe, true only if explicitly asked about options,
    "followUpQuestion": only include when user specifically asks about available options
 }`

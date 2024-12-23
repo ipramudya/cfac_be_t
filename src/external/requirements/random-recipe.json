@@ -6,7 +6,7 @@
       "name": "includeNutrition",
       "type": "boolean",
       "example": true,
-      "description": "Whether to include nutritional information to returned recipes."
+      "description": "This is Optional, whether to include nutritional information to returned recipes."
     },
     {
       "name": "number",
