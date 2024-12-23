@@ -25,7 +25,7 @@ export async function register(req: Request, res: Response, next: NextFunction) 
     }
 
     await db.insert(userTable).values(userData)
-    res.status(status.CREATED).json(omit(userData, ['password']))
+    res.status(status.CREATED).send()
   } catch (error) {
     if (error instanceof DatabaseError && error.constraint === 'users_username_unique') {
       return next(new HTTPException(status.BAD_REQUEST, 'Username already exists'))
@@ -61,7 +61,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         username: user.username,
       })
 
-      res.status(status.OK).json({ token })
+      res.status(status.OK).json({ token, user: omit(user, ['password', 'updatedAt']) })
     } catch (error) {
       logger.debug({ error })
       return next(new Error('Failed to login user'))
