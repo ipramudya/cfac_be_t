@@ -6,25 +6,6 @@ export async function getChatHistory(userId: string, limit = 50): Promise<ChatMe
   return chat?.messages || []
 }
 
-export async function addMessage(
-  userId: string,
-  message: Omit<ChatMessage, 'timestamp'>,
-): Promise<void> {
-  await ChatModel.updateOne(
-    { userId },
-    {
-      $push: {
-        messages: {
-          ...message,
-          timestamp: new Date(),
-        },
-      },
-      $set: { lastInteraction: new Date() },
-    },
-    { upsert: true },
-  )
-}
-
 export async function getContextMessages(
   userId: string,
   contextId: string,
@@ -53,11 +34,7 @@ export async function addMessages(userId: string, messages: ChatMessage[]): Prom
   await ChatModel.updateOne(
     { userId },
     {
-      $push: {
-        messages: {
-          $each: messages,
-        },
-      },
+      $setOnInsert: { messages },
       $set: { lastInteraction: new Date() },
     },
     { upsert: true },
