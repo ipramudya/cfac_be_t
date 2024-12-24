@@ -85,7 +85,7 @@ export async function changePassword(req: Request, res: Response, next: NextFunc
       const isPassValid = await bcrypt.compare(body.oldPassword, user.password)
 
       if (!isPassValid) {
-        return next(new HTTPException(status.UNAUTHORIZED, 'Invalid username or password'))
+        return next(new HTTPException(status.UNAUTHORIZED, 'Invalid password'))
       }
 
       const hashedPwd = await createHashedPassword(body.newPassword)
