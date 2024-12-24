@@ -3,15 +3,21 @@ import { logger } from '@/lib'
 import { LLMResponse, processApiResponse, processMessage } from '@/lib/llm'
 import type { ChatMessage } from '@/lib/nosql/types'
 import { getChatCache, setChatCache } from '@/lib/redis/methods'
+import { validateMessagePayload } from '@/websocket/utils'
 import io from 'socket.io'
 import { v4 as uuid } from 'uuid'
+
+type IsAcceptedCallback = (accepted: boolean) => void
 
 export function onMessage(socket: io.Socket) {
   const userId = socket.handshake.auth.userId
 
-  return async function (message: string) {
+  return async function (payload: unknown, callback: IsAcceptedCallback) {
+    callback(true) // Acknowledge receipt of the message immediately
+
     try {
-      await handleUserMessage(socket, userId, message)
+      const message = validateMessagePayload(payload)
+      await handleUserMessage({ socket, userId, text: message.text, timestamp: message.timestamp })
     } catch (error) {
       logger.error('Message handling failed:', {
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -22,8 +28,18 @@ export function onMessage(socket: io.Socket) {
   }
 }
 
-async function handleUserMessage(socket: io.Socket, userId: string, text: string) {
-  const userMessage = createMessage(text, 'user', uuid())
+async function handleUserMessage({
+  socket,
+  text,
+  timestamp,
+  userId,
+}: {
+  socket: io.Socket
+  text: string
+  timestamp: string
+  userId: string
+}) {
+  const userMessage = createMessage({ text, role: 'user', contextId: uuid(), timestamp })
   const chatHistory = await saveMessage(userId, userMessage)
 
   const llmResponse = await processMessage(chatHistory)
@@ -35,17 +51,24 @@ async function handleUserMessage(socket: io.Socket, userId: string, text: string
   return await handleApiRequest(socket, userId, chatHistory, llmResponse)
 }
 
-function createMessage(
-  text: string,
-  role: 'user' | 'assistant',
-  contextId: string,
-  metadata?: Record<string, any>,
-): ChatMessage {
+function createMessage({
+  contextId,
+  role,
+  text,
+  timestamp,
+  metadata,
+}: {
+  text: string
+  timestamp?: string
+  role: 'user' | 'assistant'
+  contextId: string
+  metadata?: Record<string, any>
+}): ChatMessage {
   return {
     text,
     role,
     contextId,
-    timestamp: new Date(),
+    timestamp: timestamp ? new Date(timestamp) : new Date(),
     metadata,
   }
 }
@@ -69,15 +92,15 @@ async function handleFollowUpQuestion(
     return
   }
 
-  const assistantMessage = createMessage(
-    llmResponse.followUpQuestion,
-    'assistant',
-    history[history.length - 1].contextId,
-    {
+  const assistantMessage = createMessage({
+    text: llmResponse.followUpQuestion,
+    role: 'assistant',
+    contextId: history[history.length - 1].contextId,
+    metadata: {
       type: llmResponse.type,
       data: llmResponse.params,
     },
-  )
+  })
 
   await saveMessage(userId, assistantMessage)
   socket.emit('message', assistantMessage)
@@ -98,15 +121,15 @@ async function handleApiRequest(
     const apiResponse = await processExternalApi(llmResponse)
     const naturalResponse = await processApiResponse(apiResponse, llmResponse.type)
 
-    const assistantMessage = createMessage(
-      naturalResponse.text,
-      'assistant',
-      history[history.length - 1].contextId,
-      {
+    const assistantMessage = createMessage({
+      text: naturalResponse.text,
+      role: 'assistant',
+      contextId: history[history.length - 1].contextId,
+      metadata: {
         type: llmResponse.type,
         data: apiResponse.metadata?.data,
       },
-    )
+    })
 
     await saveMessage(userId, assistantMessage)
     socket.emit('message', assistantMessage)
