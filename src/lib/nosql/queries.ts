@@ -63,3 +63,7 @@ export async function addMessages(userId: string, messages: ChatMessage[]): Prom
     { upsert: true },
   )
 }
+
+export async function deleteAllChatHistory(userId: string): Promise<void> {
+  await ChatModel.deleteMany({ userId })
+}
